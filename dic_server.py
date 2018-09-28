@@ -155,7 +155,7 @@ def main():
     # 数据库连接
     db = pymysql.connect('localhost', 'root', 'zzqzzq123456', 'dic_project')
     # 忽略子进程退出
-    signal.signal(signal.SIG_IGN, signal.SIGCHLD)
+    signal.signal(signal.SIGCHLD, signal.SIG_IGN)
     while 1:
         try:
             connfd, addr = s.accept()
