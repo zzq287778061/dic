@@ -64,11 +64,38 @@ class Dic_client(object):
                 print('尚未有此功能，系统完善中，敬请期待')
                 continue
             elif cmd2 == '1':
-                self.look_up()
+                self.look_up(name)
             elif cmd2 == '2':
-                pass
-            elif cmd3 == '3':
+                self.check_history(name)
+            elif cmd2 == '3':
                 return
+
+    def look_up(self,name):
+        while 1:
+            word = input('单词：')
+            if word == '##':
+                break
+            msg = 'S' + name + ' ' + word
+            self.__s.send(msg.encode())
+            data = self.__s.recv(2048).decode()
+            if data == 'ok':
+                data = self.__s.recv(2048).decode()
+                print(data)
+            else:
+                print(data)
+
+    def check_history(self,name):
+        msg = 'H' + name
+        self.__s.send(msg.encode())
+        data = self.__s.recv(1024).decode()
+        if data == 'ok':
+            while 1:
+                data = self.__s.recv(2048).decode()
+                if data == '##':
+                    break
+                print(data)
+        else:
+            print(data)
 
 
 def menu2():
@@ -106,7 +133,7 @@ def main():
             print('尚未有此功能，系统完善中，敬请期待')
             continue
         elif cmd == '1':
-            name = dic_client.login()
+            name = dic_client.register()
             if name != 1:
                 dic_client.login(name)
             else:
