@@ -20,29 +20,29 @@ import traceback
 
 class Dic_sys(object):
 
-    def __init__(self,c,db):
+    def __init__(self, c, db):
         self.__c = c
         self.__db = db
 
     # 注册操作
-    def register(self,data):
+    def register(self, data):
         pass
 
     # 登录
-    def login(self,data):
+    def login(self, data):
         pass
 
     # 查词
-    def look_up(self,data):
+    def look_up(self, data):
         pass
 
     # 查询查词记录
-    def check_history(self,data):
+    def check_history(self, data):
         pass
 
 
-def fun(c,db):
-    dic = Dic_sys(c,db)
+def fun(c, db):
+    dic = Dic_sys(c, db)
     while 1:
         data = c.recv(1024).decode()
         print('请求是：', data)
@@ -58,7 +58,6 @@ def fun(c,db):
             dic.look_up(data)
         elif data[0] == 'H':
             dic.check_history(data)
-
 
 
 def main():
@@ -84,11 +83,9 @@ def main():
             traceback.print_exc()
             continue
         # 创建子进程来处理客户端请求
-        p = Process(target=fun,args=(coonfd,db))
+        p = Process(target=fun, args=(connfd, db))
         p.daemon = 1
         p.start()
-
-
 
 
 if __name__ == '__main__':
