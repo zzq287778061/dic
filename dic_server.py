@@ -24,15 +24,19 @@ class Dic_sys(object):
         self.__c = c
         self.__db = db
 
+    # 注册操作
     def register(self,data):
         pass
 
+    # 登录
     def login(self,data):
         pass
 
+    # 查词
     def search(self,data):
         pass
 
+    # 查询查词记录
     def check_history(self,data):
         pass
 
@@ -42,6 +46,7 @@ def fun(c,db):
     while 1:
         data = c.recv(1024).decode()
         print('请求是：', data)
+        # 根据判断客户端发来的信息来执行相应的操作
         if (not data) or data[0] == 'E':
             c.close()
             sys.exit(0)
