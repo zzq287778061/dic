@@ -16,7 +16,7 @@ import re
 f = open('dic.txt')
 db = pymysql.connect('localhost', 'root', 'zzqzzq123456', 'dic_project')
 
-cursor = db.connect()
+cursor = db.cursor()
 for line in f:
     try:
         l = re.split(r'[ ]+', line)
