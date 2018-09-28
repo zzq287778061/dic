@@ -33,7 +33,7 @@ class Dic_sys(object):
         pass
 
     # 查词
-    def search(self,data):
+    def look_up(self,data):
         pass
 
     # 查询查词记录
@@ -55,7 +55,7 @@ def fun(c,db):
         elif data[0] == 'L':
             dic.login(data)
         elif data[0] == 'S':
-            dic.search(data)
+            dic.look_up(data)
         elif data[0] == 'H':
             dic.check_history(data)
 
