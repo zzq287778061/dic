@@ -30,7 +30,7 @@ def main():
     s.bind(ADDR)
     s.listen(8)
     dic = dic_sys()
-    dic.input_dic()
+
 
 
 if __name__ == '__main__':
