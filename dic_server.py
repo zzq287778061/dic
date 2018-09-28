@@ -11,11 +11,11 @@ last_edited: 18-09-27
 '''
 from socket import *
 import pymysql
-import os
 from multiprocessing import *
 import sys
 import signal
 import traceback
+import time
 
 
 class Dic_sys(object):
@@ -26,19 +26,103 @@ class Dic_sys(object):
 
     # 注册操作
     def register(self, data):
-        pass
+        l = data[1:].split()
+        name = l[0]
+        pwd = l[1]
+        cursor = self.__db.cursor()
+        sql = "select * from user where name='%s'" % name
+        cursor.execute(sql)
+        r = cursor.fetchone()
+        if r is not None:
+            self.__c.send(b'exists')
+            return
+        sql = "insert into user(name,password) values('%s','%s')" % (name, pwd)
+        try:
+            cursor.execute(sql)
+            self.__db.commit()
+            self.__c.send(b'ok')
+        except:
+            self.__db.rollback()
+            self.__c.send(b'failed')
+            return
+        else:
+            print('%s注册成功' % name)
 
     # 登录
     def login(self, data):
-        pass
+        l = data[1:].split()
+        name = l[0]
+        pwd = l[1]
+        cursor = self.__db.cursor()
+        sql = "select * from user where name='%s' and password='%s'" % (name, pwd)
+        cursor.execute(sql)
+        r =cursor.fetchone()
+        if r is None:
+            self.__c.send('用户名或密码不正确'.encode())
+        else:
+            self.__c.send(b'ok')
 
     # 查词
     def look_up(self, data):
-        pass
+        l = data[1:].split()
+        name = l[0]
+        word = l[1]
+        cursor = self.__db.cursor()
+        def insert_history():
+            tm = time.ctime()
+            sql = "insert into history(name,word,time) values('%s','%s','%s')" % (name, word, tm)
+            try:
+                cursor.execute(sql)
+                self.__db.commit()
+            except:
+                self.__db.rollback()
+                return
+        try:
+            f = open('dic.txt', 'rb')
+        except:
+            self.__c.send('服务端异常'.encode())
+            return
+        while 1:
+            line = f.readline().decode()
+            w = line.split()[0]
+            if (not line) or w > word:
+                self.__c.send('未找到该单词'.encode())
+                break
+            elif w == word:
+                self.__c.send(b'ok')
+                time.sleep(0.1)
+                self.__c.send(line.encode())
+                insert_history()
+                break
+        f.close()
 
     # 查询查词记录
     def check_history(self, data):
-        pass
+        name = data[1:]
+        cursor = self.__db.cursor()
+        try:
+            sql = "select * from history where name='%s'" % name
+            cursor.execute(sql)
+            r =cursor.fetchall()
+            if not r:
+                self.__c.send('没有历史记录'.encode())
+                return
+            else:
+                self.__c.send(b'ok')
+        except:
+            self.__c.send('数据库查询异常'.encode())
+            return
+        n = 0
+        for i in r:
+            n += 1
+            if n >10:
+                break
+            time.sleep(0.1)
+            msg = "%s  %s  %s" % (i[1], i[2], i[3])
+            self.__c.send(msg.encode())
+        time.sleep(0.1)
+        self.__c.send(b'##')
+
 
 
 def fun(c, db):
